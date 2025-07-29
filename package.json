@@ -1,0 +1,39 @@
+{
+  "name": "circle-of-life-backend",
+  "version": "1.0.0",
+  "description": "> Backend system for the **Circle of Life** platform – a decentralized lifestyle intelligence and self-optimization app where users own, manage, and monetize their life data.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marma-Fintech-official/circle-of-life-backend.git"
+  },
+  "keywords": [],
+  "author": "paviesh",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Marma-Fintech-official/circle-of-life-backend/issues"
+  },
+  "homepage": "https://github.com/Marma-Fintech-official/circle-of-life-backend#readme",
+  "dependencies": {
+    "celebrate": "^15.0.3",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.6.1",
+    "errors": "^0.3.0",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.5",
+    "nodemon": "^3.1.10",
+    "segments": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3"
+  }
+}
