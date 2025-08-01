@@ -1,28 +1,30 @@
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import { connectDB } from './src/config/db.js'
+import { router } from './src/routes/allRoutes.js'
 
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { connectDB } from './config/db.js';
-
-dotenv.config();
+dotenv.config()
 
 // Create Express app
-const app = express();
+const app = express()
 
 // Middleware
-app.use(cors());
-app.use(express.json()); // Parse JSON request bodies
+app.use(cors())
+app.use(express.json()) // Parse JSON request bodies
 
 // Connect to MongoDB
-await connectDB();
+await connectDB()
+
+// Set up routes
+app.use(router)
 
 // Example test route
 app.get('/', (req, res) => {
-  res.send('🌍 Welcome to Circle of Life Backend 🚀🚀');
-});
+  res.send('🌍 Welcome to Circle of Life Backend 🚀🚀')
+})
 
-
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running 🔥🔥`);
-});
+  console.log(`🚀 Server is running 🔥🔥`)
+})

@@ -1,4 +1,4 @@
-import { decryptMessage } from '../helper/crypto'; // Make sure crypto.js is using ES modules too
+import { decryptMessage } from '../helper/crypto.js'; // Make sure crypto.js is using ES modules too
 
 export const decryptedDatas = (req, res) => {
   const { encryptedData, iv } = req.body;
