@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import { createToken } from "../helper/jwt.js";
 
 export const signup = async (req, res, next) => {
-  console.log("Signup api hitted");
   try {
     const { userName, password, confirmpassword } = req.body;
 
@@ -26,7 +25,6 @@ export const signup = async (req, res, next) => {
     const hashed = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      authType: "App",
       userName,
       password: hashed,
     });
@@ -79,8 +77,7 @@ export const login = async (req, res, next) => {
       message: "Login successful",
       token: token,
       user: {
-        userName: user.userName,
-        authType: user.authType,
+        userName: user.userName
       },
     });
   } catch (err) {

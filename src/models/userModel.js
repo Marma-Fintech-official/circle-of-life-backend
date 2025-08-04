@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
     authType: {
       type: String,
       enum: ["google", "App", "web3"],
-      required: true,
+      default: "App",
     },
     email: {
       type: String,
