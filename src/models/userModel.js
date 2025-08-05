@@ -9,29 +9,29 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      default: '',
+      default: "",
     },
     userName: {
       type: String,
       unique: true,
       sparse: true, // allows null, unique only for non-null
-      default: '',
+      default: "",
     },
     password: {
       type: String,
-      default: '',
+      default: "",
     },
     googleId: {
       type: String,
-      default: '',
+      default: "",
     },
     walletAddress: {
       type: String,
-      default: '',
+      default: "",
     },
     walletProvider: {
       type: String,
-      default: '',
+      default: "",
     },
     dob: {
       type: Date,
@@ -39,20 +39,26 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ['Male', 'Female', 'Other', ''],
-      default: '',
+      enum: ["Male", "Female", "Other", ""],
+      default: "",
     },
     yourName: {
       type: String,
-      default: '',
+      default: "",
     },
     profilePic: {
-      type: String, 
-      default: '',
+      type: String,
+      default: "",
     },
     yourInterests: {
       type: [String],
       default: [],
+    },
+    referId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      default: "",
     },
   },
   { timestamps: true }

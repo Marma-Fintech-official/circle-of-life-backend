@@ -1,6 +1,7 @@
-import User from '../models/userModel.js'
-import bcrypt from 'bcryptjs'
-import { createToken } from '../helper/jwt.js'
+import User from "../models/userModel.js";
+import bcrypt from "bcryptjs";
+import { createToken } from "../helper/jwt.js";
+import { getUniqueReferId } from "../utils/generateReferrals.js";
 
 export const signup = async (req, res, next) => {
   try {
@@ -22,23 +23,36 @@ export const signup = async (req, res, next) => {
     }
 
     // hash password
-    const hashed = await bcrypt.hash(password, 10)
+    const hashed = await bcrypt.hash(password, 10);
+
+    let referId = "";
+    try {
+      referId = await getUniqueReferId(User); // may throw if something is wrong
+    } catch (err) {
+      console.error("Failed to generate unique referId:", err);
+      // Option: proceed without referId or return error — here we proceed without blocking signup
+    }
 
     const newUser = new User({
       userName,
-      password: hashed
-    })
+      password: hashed,
+      referId: referId,
+    });
 
     const savedUser = await newUser.save()
 
     res.status(201).json({
-      message: 'Signup Successfully'
-    })
+      message: "Signup Successfully",
+      user: {
+        username: savedUser.userName,
+        referId: savedUser.referId,
+      },
+    });
   } catch (error) {
     res.status(500).json({
-      message: 'Something went wrong'
-    })
-    next(error)
+      message: "Something went wrong",
+    });
+    next(error);
   }
 }
 
@@ -72,14 +86,14 @@ export const login = async (req, res, next) => {
     })
 
     res.status(200).json({
-      message: 'Login successfully',
-      token: token
-    })
+      message: "Login successfully",
+      token: token,
+    });
   } catch (error) {
     res.status(500).json({
-      message: 'Something went wrong'
-    })
-    next(error)
+      message: "Something went wrong",
+    });
+    next(error);
   }
 }
 
@@ -136,8 +150,9 @@ export const personalDetails = async (req, res, next) => {
       user: updatedUser
     })
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: 'Something went wrong' })
-    next(error)
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+    next(error);
   }
-}
+};
