@@ -1,13 +1,13 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-export async function createToken(payload) {
+export function createToken(payload) {
   return jwt.sign(payload, JWT_SECRET_KEY, {
-    expiresIn: '1d',
+    expiresIn: "1d",
   });
 }
 

@@ -1,4 +1,8 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
- 
-router.use("/api", require("./userPersonalityRoute.js"));
+import authRoutes from "./authRoute.js"; // ✅ Works now
+
+// router.use("/api", require("./userPersonalityRoute.js"));
+router.use("/auth", authRoutes);
+
+export default router;

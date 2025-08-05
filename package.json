@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Marma-Fintech-official/circle-of-life-backend#readme",
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.2",
     "celebrate": "^15.0.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
@@ -30,6 +31,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.5",
+    "morgan": "^1.10.1",
     "nodemon": "^3.1.10",
     "segments": "^1.0.1"
   },
