@@ -32,13 +32,29 @@ export const createUserPersonality = async (req, res, next) => {
       q7_senseOfPurpose
     });
 
-    const saved = await newPersonality.save();
-    res.status(201).json(saved);
+    await newPersonality.save();
+    res.status(201).json({ message: "Your Personality Details Created Successfully." });
   } catch (error) {
     res.status(500).json({
       message: 'Something went wrong'
     })
-    next(error); // You don't need to call res.status here if you're passing to error handler
+    next(error); 
   }
 };
+
+export const getUserPersonalityDetails = async(req,res,next) => {
+  try {
+    const userId = req.user._id;
+    const personality = await UserPersonality.findOne({ userId });
+    if (!personality) {
+      return res.status(404).json({ message: "No Personality Details Found" });
+    }
+    res.status(200).json(personality);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error); 
+  }
+}
 

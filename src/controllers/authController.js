@@ -83,6 +83,7 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
 export const personalDetails = async (req, res, next) => {
   try {
     const { dob, gender, yourName, yourInterests } = req.body;
