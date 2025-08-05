@@ -1,10 +1,11 @@
 import UserPersonality from '../models/userPersonalityModel.js'
 import { decryptedDatas } from '../helper/decrypt.js'
 
-export const createUserPersonality = async (req, res, next) => {
+export const createUserPersonality = async (req, res, next) => {  
   try {
-    const {
-      userId,
+
+    const userId = req.user._id; // Get telegramId from req.user
+    const {    
       q1_emotionalControl,
       q2_mentalClarity,
       q3_energyOnWake,
