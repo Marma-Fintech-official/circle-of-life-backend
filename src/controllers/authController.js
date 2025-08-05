@@ -1,122 +1,143 @@
-import User from "../models/userModel.js";
-import bcrypt from "bcryptjs";
-import { createToken } from "../helper/jwt.js";
+import User from '../models/userModel.js'
+import bcrypt from 'bcryptjs'
+import { createToken } from '../helper/jwt.js'
 
 export const signup = async (req, res, next) => {
   try {
-    const { userName, password, confirmpassword } = req.body;
+    const { userName, password, confirmpassword } = req.body
 
     // validate required
     if (!userName || !password || !confirmpassword) {
-      return res.status(400).json({ message: "All fields are required." });
+      return res.status(400).json({ message: 'All fields are required.' })
     }
 
     if (password !== confirmpassword) {
-      return res.status(400).json({ message: "Passwords do not match." });
+      return res.status(400).json({ message: 'Passwords do not match.' })
     }
 
     // check if user exists
-    const existing = await User.findOne({ userName });
+    const existing = await User.findOne({ userName })
     if (existing) {
-      return res.status(409).json({ message: "Username already taken." });
+      return res.status(409).json({ message: 'Username already taken.' })
     }
 
     // hash password
-    const hashed = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 10)
 
     const newUser = new User({
       userName,
-      password: hashed,
-    });
+      password: hashed
+    })
 
-    const savedUser = await newUser.save();
+    const savedUser = await newUser.save()
 
     res.status(201).json({
-      message: "Signup Successfully",
-    });
+      message: 'Signup Successfully'
+    })
   } catch (error) {
     res.status(500).json({
       message: 'Something went wrong'
     })
-    next(error);
+    next(error)
   }
-};
+}
 
 export const login = async (req, res, next) => {
   try {
-    const { userName, password } = req.body;
+    const { userName, password } = req.body
 
     if (!userName || !password) {
       return res
         .status(400)
-        .json({ message: "Username and password are required." });
+        .json({ message: 'Username and password are required.' })
     }
 
     // Find user with username and authType "username"
-    const user = await User.findOne({ userName, authType: "App" });
+    const user = await User.findOne({ userName, authType: 'App' })
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid username or password." });
+      return res.status(401).json({ message: 'Invalid username or password.' })
     }
 
     // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid username or password." });
+      return res.status(401).json({ message: 'Invalid username or password.' })
     }
 
     // Generate token
     const token = createToken({
       id: user._id,
-      authType: user.authType,
-    });
+      authType: user.authType
+    })
 
     res.status(200).json({
-      message: "Login successfully",
-      token: token,
-   
-    });
+      message: 'Login successfully',
+      token: token
+    })
   } catch (error) {
     res.status(500).json({
       message: 'Something went wrong'
     })
-    next(error);
+    next(error)
   }
-};
+}
 
 export const personalDetails = async (req, res, next) => {
   try {
-    const { dob, gender, yourName, yourInterests } = req.body;
-    const userId = req.user?.id || req.body.userId;
+    const userId = req.user._id
+    const { dob, gender, yourName, yourInterests } = req.body
+    const profilePic = req.file
 
-    let updateFields = {
-      dob,
-      gender,
-      yourName,
-      yourInterests: Array.isArray(yourInterests)
-        ? yourInterests
-        : yourInterests?.split(',') || [],
-    };
-
-    if (req.file) {
-      const profilePic = req.file.path;
-      updateFields.profilePic = profilePic;
+    // Validate required fields
+    if (!dob || !gender || !yourName || !yourInterests || !profilePic) {
+      return res.status(400).json({
+        message: 'Missing Fields'
+      })
     }
 
-    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
-      new: true,
-      upsert: true,
-    });
+    // Fetch user by ID
+    const user = await User.findById(userId)
+
+    // Check if any personal detail already exists
+    const hasPersonalDetails =
+      user.dob ||
+      user.gender ||
+      user.yourName ||
+      user.profilePic ||
+      user.yourInterests?.length > 0
+
+    if (hasPersonalDetails) {
+      return res
+        .status(400)
+        .json({ message: 'Your Personal Details Already Created' })
+    }
+
+    // Convert "sports, food" => ['sports', 'food']
+    const interestsArray = yourInterests
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean) // remove empty strings
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        dob,
+        gender,
+        yourName,
+        profilePic: profilePic.path,
+        yourInterests: interestsArray
+      },
+      { new: true }
+    )
 
     res.status(200).json({
-      message: "Personal details updated successfully",
-      user: updatedUser,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Something went wrong'
+      message: 'Personal Details updated successfully',
+      user: updatedUser
     })
-    next(error);
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Something went wrong' })
+    next(error)
   }
-};
-
+}

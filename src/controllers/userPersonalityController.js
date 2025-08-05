@@ -8,7 +8,7 @@ export const createUserPersonality = async (req, res, next) => {
     // Check if the user already has a personality entry
     const existingPersonality = await UserPersonality.findOne({ userId });
     if (existingPersonality) {
-      return res.status(400).json({ message: "Personality already created for this user." });
+      return res.status(400).json({ message: "Your Personality Details Already Created" });
     }
 
     const {
