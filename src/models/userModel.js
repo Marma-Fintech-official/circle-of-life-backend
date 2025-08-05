@@ -27,6 +27,21 @@ const userSchema = new mongoose.Schema(
     walletProvider: {
       type: String,
     },
+    name: {
+      type: String,
+      required: true,
+    },
+    avatarUrl: {
+      type: String,
+    },
+    dob: {
+      type: Date,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+    },
   },
   { timestamps: true }
 );
