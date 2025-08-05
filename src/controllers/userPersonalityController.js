@@ -12,7 +12,7 @@ export const createUserPersonality = async (req, res, next) => {
       q5_workAlignment,
       q6_meaningfulConnections,
       q7_senseOfPurpose
-    } = decryptedDatas(req)
+    } = req.body
 
     const newPersonality = new UserPersonality({
       userId,

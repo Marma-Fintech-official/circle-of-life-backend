@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      default: '',
     },
     userName: {
       type: String,
@@ -17,16 +18,38 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      default: '',
     },
     googleId: {
       type: String,
+      default: '',
     },
     walletAddress: {
       type: String,
+      default: '',
     },
     walletProvider: {
       type: String,
+      default: '',
     },
+    dob: {
+      type: Date,
+      default: '',
+    },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other'],
+      default: '',
+    },
+    yourName: {
+      type: String,
+      default: '',
+    },
+    profilePic: {
+      type: String, 
+      default: '',
+    },
+
   },
   { timestamps: true }
 );
