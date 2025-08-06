@@ -5,10 +5,11 @@ const userSchema = new mongoose.Schema(
     authType: {
       type: String,
       enum: ["google", "App", "web3"],
-      required: true,
+      default: "App",
     },
     email: {
       type: String,
+      default: '',
     },
     userName: {
       type: String,
@@ -17,31 +18,38 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      default: '',
     },
     googleId: {
       type: String,
+      default: '',
     },
     walletAddress: {
       type: String,
+      default: '',
     },
     walletProvider: {
       type: String,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    avatarUrl: {
-      type: String,
+      default: '',
     },
     dob: {
       type: Date,
-      required: true,
+      default: '',
     },
     gender: {
       type: String,
-      enum: ["male", "female", "other"],
+      enum: ['Male', 'Female', 'Other'],
+      default: '',
     },
+    yourName: {
+      type: String,
+      default: '',
+    },
+    profilePic: {
+      type: String, 
+      default: '',
+    },
+
   },
   { timestamps: true }
 );
