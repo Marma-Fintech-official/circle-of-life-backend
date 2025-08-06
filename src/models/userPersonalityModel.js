@@ -1,7 +1,5 @@
 import mongoose from 'mongoose'
 
-const { Schema, model } = mongoose
-
 const AnswerEnum = [
   'Strongly Agree',
   'Agree',
@@ -10,10 +8,9 @@ const AnswerEnum = [
   'Strongly Disagree'
 ]
 
-const userPersonalitySchema = new Schema(
+const userPersonalitySchema = new mongoose.Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-
     q1_emotionalControl: { type: String, enum: AnswerEnum, required: true },
     q2_mentalClarity: { type: String, enum: AnswerEnum, required: true },
     q3_energyOnWake: { type: String, enum: AnswerEnum, required: true },
@@ -31,6 +28,6 @@ const userPersonalitySchema = new Schema(
   }
 )
 
-const UserPersonality = model('UserPersonality', userPersonalitySchema)
+const UserPersonality = mongoose.model('UserPersonality', userPersonalitySchema)
 
-export default UserPersonality
+export default UserPersonality;

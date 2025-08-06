@@ -33,7 +33,7 @@ export const createUserPersonality = async (req, res, next) => {
     });
 
     await newPersonality.save();
-    res.status(201).json({ message: "Your Personality Details Created Successfully." });
+    res.status(201).json({ message: "Your Personality Details Created Successfully" });
   } catch (error) {
     res.status(500).json({
       message: 'Something went wrong'
