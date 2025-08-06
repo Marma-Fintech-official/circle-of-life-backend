@@ -3,6 +3,7 @@ import { createUserPersonality,getUserPersonalityDetails,userPersonalityQuestion
 import { payloadValidation } from '../helper/playloadValidation.js'
 import { protect } from '../helper/protect.js'
 import { celebrate,errors } from 'celebrate'
+import { upload } from "../helper/multer.js";
 const router = express.Router()
 
 
@@ -10,7 +11,7 @@ router.post('/userPersonality',protect, createUserPersonality)
 
 router.get('/userPersonalityDetails', protect, getUserPersonalityDetails)
 
-router.post('/createPersonalityQuestions', createPersonalityQuestions)
+router.post('/createPersonalityQuestions',  upload.single("titleLogo"), createPersonalityQuestions)
 
 router.get('/userPersonalityQuestions', userPersonalityQuestions)
 

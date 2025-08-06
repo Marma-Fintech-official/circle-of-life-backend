@@ -10,7 +10,7 @@ const AnswerEnum = [
 
 const userPersonalitySchema = new mongoose.Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     q1_emotionalControl: { type: String, enum: AnswerEnum, required: true },
     q2_mentalClarity: { type: String, enum: AnswerEnum, required: true },
     q3_energyOnWake: { type: String, enum: AnswerEnum, required: true },
