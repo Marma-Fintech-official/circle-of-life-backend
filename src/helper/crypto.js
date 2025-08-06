@@ -1,10 +1,11 @@
-import CryptoJS from 'crypto-js';
-import dotenv from 'dotenv';
+import CryptoJS from "crypto-js";
+import dotenv from "dotenv";
 
-dotenv.config();  
+dotenv.config();
 
 const secretKey = process.env.SECRET_KEY;
-const ivKey = process.env.IV_KEY;
+const ivKey =  CryptoJS.enc.Utf8.parse("myInitVector1234");
+
 
 if (!secretKey || !ivKey) {
   throw new Error("SECRET_KEY or IV_KEY is missing");
@@ -29,5 +30,25 @@ export const decryptMessage = (encryptedMessage) => {
     return decryptedMessage;
   } catch (error) {
     throw new Error("Decryption failed or invalid input");
+  }
+};
+
+export const encryptMessage = (message) => {
+  try {
+    const encrypted = CryptoJS.AES.encrypt(
+      message,
+      CryptoJS.enc.Utf8.parse(secretKey),
+      {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      }
+    );
+    const encryptedData = encrypted.toString();
+    const ivString = iv;
+    return { encryptedData, ivString };
+  } catch (error) {
+    console.error(`Encryption error: ${error.message}`);
+    throw new Error("Encryption failed");
   }
 };
