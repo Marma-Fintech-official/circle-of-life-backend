@@ -1,4 +1,3 @@
-// routes/socialAuthRoute.js
 import express from "express";
 import passport from "passport";
 import { COOKIE_OPTIONS } from "../helper/cookie.js";

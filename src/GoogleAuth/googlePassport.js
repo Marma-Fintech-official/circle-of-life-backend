@@ -18,11 +18,10 @@ passport.use(
 
         if (!user) {
           user = await User.create({
-            authType: "google",
+            authType: profile.provider,
             googleId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
-            // avatarUrl: profile.photos[0].value,
           });
         }
 

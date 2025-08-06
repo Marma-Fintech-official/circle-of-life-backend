@@ -6,6 +6,6 @@ import socialAuthRoute from "../GoogleAuth/socialAuthRoute.js";
 
 router.use("/api", authRoutes);
 router.use("/api", userPersonalityRoute);
-router.use("/auth", socialAuthRoute);
+router.use("/api", socialAuthRoute);
 
 export default router;
