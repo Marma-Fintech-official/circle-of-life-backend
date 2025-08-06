@@ -35,11 +35,11 @@ const userSchema = new mongoose.Schema(
     },
     dob: {
       type: Date,
-      default: '',
+      default: null,
     },
     gender: {
       type: String,
-      enum: ['Male', 'Female', 'Other'],
+      enum: ['Male', 'Female', 'Other', ''],
       default: '',
     },
     yourName: {
@@ -50,9 +50,12 @@ const userSchema = new mongoose.Schema(
       type: String, 
       default: '',
     },
-
+    yourInterests: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model("user", userSchema);

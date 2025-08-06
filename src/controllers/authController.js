@@ -32,15 +32,13 @@ export const signup = async (req, res, next) => {
     const savedUser = await newUser.save();
 
     res.status(201).json({
-      message: "Signup successful",
-      user: {
-        id: savedUser._id,
-        userName: savedUser.userName,
-        authType: savedUser.authType,
-      },
+      message: "Signup Successfully",
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error);
   }
 };
 
@@ -69,18 +67,55 @@ export const login = async (req, res, next) => {
 
     // Generate token
     const token = createToken({
-      userId: user._id,
+      id: user._id,
       authType: user.authType,
     });
 
     res.status(200).json({
-      message: "Login successful",
+      message: "Login successfully",
       token: token,
-      user: {
-        userName: user.userName
-      },
+   
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error);
   }
 };
+export const personalDetails = async (req, res, next) => {
+  try {
+    const { dob, gender, yourName, yourInterests } = req.body;
+    const userId = req.user?.id || req.body.userId;
+
+    let updateFields = {
+      dob,
+      gender,
+      yourName,
+      yourInterests: Array.isArray(yourInterests)
+        ? yourInterests
+        : yourInterests?.split(',') || [],
+    };
+
+    if (req.file) {
+      const profilePic = req.file.path;
+      updateFields.profilePic = profilePic;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+      new: true,
+      upsert: true,
+    });
+
+    res.status(200).json({
+      message: "Personal details updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error);
+  }
+};
+
