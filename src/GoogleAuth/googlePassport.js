@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
-
+import { getUniqueReferId } from "../utils/generateReferrals.js";
 dotenv.config();
 
 passport.use(
@@ -17,12 +17,15 @@ passport.use(
         let user = await User.findOne({ googleId: profile.id });
 
         if (!user) {
-          user = await User.create({
+          const userData = {
             authType: profile.provider,
             googleId: profile.id,
-            name: profile.displayName,
-            email: profile.emails[0].value,
-          });
+            userName: profile.displayName,
+            email: profile.emails?.[0]?.value || "",
+            profilePic: profile.photos?.[0]?.value || "",
+            referId: await getUniqueReferId(User),
+          };
+          user = await User.create(userData);
         }
 
         return done(null, user);
