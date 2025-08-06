@@ -58,3 +58,25 @@ export const getUserPersonalityDetails = async(req,res,next) => {
   }
 }
 
+export const createPersonalityQuestions = async(req,res,next) => {
+  try {
+    
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error)
+  }
+}
+
+export const userPersonalityQuestions = async(req,res,next) => {
+  try {
+    
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error)
+  }
+}
+
