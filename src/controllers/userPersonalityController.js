@@ -1,5 +1,6 @@
 import UserPersonality from '../models/userPersonalityModel.js'
-import { decryptedDatas } from '../helper/decrypt.js'
+import userPersonalityQuestions from '../models/userPersonalityQuestionsModel.js';
+// import { decryptedDatas } from "../helper/decrypt.js";
 
 export const createUserPersonality = async (req, res, next) => {
   try {
@@ -58,25 +59,50 @@ export const getUserPersonalityDetails = async(req,res,next) => {
   }
 }
 
-export const createPersonalityQuestions = async(req,res,next) => {
+export const createPersonalityQuestions = async (req, res, next) => {
   try {
-    
-  } catch (error) {
-    res.status(500).json({
-      message: 'Something went wrong'
-    })
-    next(error)
-  }
-}
+    const { title, question } = req.body;
+    const titleLogo = req.file;
 
-export const userPersonalityQuestions = async(req,res,next) => {
+    if (!title || !question || !titleLogo) {
+      return res.status(400).json({
+        message: 'Missing fields: title, question, or titleLogo',
+      });
+    }
+
+    const newQuestion = new UserPersonality({
+      title,
+      question,
+      titleLogo: titleLogo.path, // or titleLogo.filename based on your multer config
+    });
+
+    await newQuestion.save();
+
+    res.status(201).json({
+      message: 'Personality question created successfully',
+    });
+  } catch (error) {
+    console.error('Error creating personality question:', error);
+    res.status(500).json({
+      message: 'Something went wrong',
+    });
+    next(error);
+  }
+};
+
+export const userPersonalityQuestions = async (req, res, next) => {
   try {
-    
+    const questions = await UserPersonality.find();
+
+    res.status(200).json({
+      message: 'Personality questions fetched successfully',
+      data: questions,
+    });
   } catch (error) {
     res.status(500).json({
-      message: 'Something went wrong'
-    })
-    next(error)
+      message: 'Something went wrong',
+    });
+    next(error);
   }
-}
+};
 
