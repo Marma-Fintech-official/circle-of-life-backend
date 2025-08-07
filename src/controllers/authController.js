@@ -2,10 +2,14 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import { createToken } from "../helper/jwt.js";
 import { getUniqueReferId } from "../utils/generateReferrals.js";
+// import { decryptedDatas } from "../helper/decrypt.js";
 
 export const signup = async (req, res, next) => {
-  try {
-    const { userName, password, confirmpassword } = req.body;
+  
+  try {    
+    // const { userName, password, confirmpassword } = decryptedDatas(req);
+
+    const { userName, password, confirmpassword } = req.body
 
     // validate required
     if (!userName || !password || !confirmpassword) {
