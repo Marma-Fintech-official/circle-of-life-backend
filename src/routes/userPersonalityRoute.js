@@ -1,5 +1,5 @@
 import express from 'express'
-import { createUserPersonality,getUserPersonalityDetails,userPersonalityQuestions,createPersonalityQuestions } from '../controllers/userPersonalityController.js'
+import { createUserPersonality,getUserPersonalityDetails,getUserPersonalityQuestions,createPersonalityQuestions } from '../controllers/userPersonalityController.js'
 import { payloadValidation } from '../helper/playloadValidation.js'
 import { protect } from '../helper/protect.js'
 import { celebrate,errors } from 'celebrate'
@@ -13,7 +13,7 @@ router.get('/userPersonalityDetails', protect, getUserPersonalityDetails)
 
 router.post('/createPersonalityQuestions',  upload.single("titleLogo"), createPersonalityQuestions)
 
-router.get('/userPersonalityQuestions', userPersonalityQuestions)
+router.get('/userPersonalityQuestions', getUserPersonalityQuestions)
 
 router.use(errors());
 
