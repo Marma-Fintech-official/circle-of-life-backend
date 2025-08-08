@@ -77,7 +77,7 @@ export const createPersonalityQuestions = async (req, res, next) => {
 
     if (!title || !question || !titleLogo) {
       return res.status(400).json({
-        message: 'Missing fields: title, question, or titleLogo'
+        message: 'Missing fields'
       })
     }
 
