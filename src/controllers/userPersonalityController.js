@@ -1,5 +1,9 @@
 import UserPersonality from '../models/userPersonalityModel.js'
 import userPersonalityQuestions from '../models/userPersonalityQuestionsModel.js'
+import {
+  personalityWords,
+  personalityDescriptions
+} from '../helper/personality_data.js'
 // import { decryptedDatas } from "../helper/decrypt.js";
 
 export const createUserPersonality = async (req, res, next) => {
@@ -21,8 +25,39 @@ export const createUserPersonality = async (req, res, next) => {
       q4_environmentSupport,
       q5_workAlignment,
       q6_meaningfulConnections,
-      q7_senseOfPurpose
+      q7_senseOfPurpose,
+      answerArray // [5,4,3,2,1,5,3]
     } = req.body
+
+    // Hashing function: takes a string and produces a consistent positive integer
+    function djb2Hash (str) {
+      let hash = 5381 // starting "seed" value for djb2 algorithm
+
+      // Loop through each character in the string
+      for (let i = 0; i < str.length; i++) {
+        // Multiply hash by 33 (shift left by 5 bits = multiply by 32, then add hash once more)
+        // Then add the Unicode value of the current character
+        hash = (hash << 5) + hash + str.charCodeAt(i)
+
+        // Keep hash value within 32-bit unsigned integer range
+        hash = hash & 0xffffffff
+      }
+
+      // Return a positive number (avoids negative indices later)
+      return Math.abs(hash)
+    }
+
+    // Convert answer array into a single string, e.g. [5,4,3] -> "5,4,3"
+    const hash = djb2Hash(answerArray.join(','))
+
+    // Use modulus to ensure index is within personalityWords array length
+    const index = hash % personalityWords.length
+
+    // Pick the personality word using the calculated index
+    const personalityWord = personalityWords[index]
+
+    // Pick the matching personality description
+    const personalityDescription = personalityDescriptions[index]
 
     const newPersonality = new UserPersonality({
       userId,
@@ -36,9 +71,15 @@ export const createUserPersonality = async (req, res, next) => {
     })
 
     await newPersonality.save()
-    res
-      .status(201)
-      .json({ message: 'Your Personality Details Created Successfully' })
+
+    // 6. Send back result
+    res.status(201).json({
+      message: 'Your Personality Details Created Successfully',
+      personalityWord,
+      personalityDescription,
+      index,
+      hash
+    })
   } catch (error) {
     res.status(500).json({
       message: 'Something went wrong'
@@ -67,7 +108,9 @@ export const createPersonalityQuestions = async (req, res, next) => {
   try {
     const { title, question } = req.body
 
-    const existingPersonalityQuestion = await userPersonalityQuestions.findOne({ title })
+    const existingPersonalityQuestion = await userPersonalityQuestions.findOne({
+      title
+    })
     if (existingPersonalityQuestion) {
       return res
         .status(400)
