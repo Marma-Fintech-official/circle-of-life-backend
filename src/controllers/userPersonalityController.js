@@ -72,7 +72,6 @@ export const createUserPersonality = async (req, res, next) => {
 
     await newPersonality.save()
 
-    // 6. Send back result
     res.status(201).json({
       message: 'Your Personality Details Created Successfully',
       personalityWord,
