@@ -70,6 +70,8 @@ export const createUserPersonality = async (req, res, next) => {
       q7_senseOfPurpose
     })
 
+    
+
     await newPersonality.save()
 
     res.status(201).json({
