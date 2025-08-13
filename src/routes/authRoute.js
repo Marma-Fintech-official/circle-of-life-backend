@@ -3,6 +3,7 @@ import {
   signup,
   login,
   personalDetails,
+  addReferral,
 } from "../controllers/authController.js";
 import { payloadValidation } from "../helper/playloadValidation.js";
 import { protect } from "../helper/protect.js";
@@ -10,7 +11,7 @@ import { celebrate, errors } from "celebrate";
 import { upload } from "../helper/multer.js";
 const router = express.Router();
 
-router.post("/signup", celebrate(payloadValidation), signup);
+router.post("/signup", signup);
 router.post("/login", login);
 router.post(
   "/personalDetails",
@@ -18,6 +19,8 @@ router.post(
   protect,
   personalDetails
 );
+
+router.post("/referral", protect, addReferral);
 
 router.use(errors());
 

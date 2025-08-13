@@ -3,27 +3,26 @@ import bcrypt from "bcryptjs";
 import { createToken } from "../helper/jwt.js";
 import { getUniqueReferId } from "../utils/generateReferrals.js";
 // import { decryptedDatas } from "../helper/decrypt.js";
-
+import Referral from "../models/userReferralDetailsModel.js";
 export const signup = async (req, res, next) => {
-  
-  try {    
+  try {
     // const { userName, password, confirmpassword } = decryptedDatas(req);
 
-    const { userName, password, confirmpassword } = req.body
+    const { userName, password, confirmpassword } = req.body;
 
     // validate required
     if (!userName || !password || !confirmpassword) {
-      return res.status(400).json({ message: 'All fields are required.' })
+      return res.status(400).json({ message: "All fields are required." });
     }
 
     if (password !== confirmpassword) {
-      return res.status(400).json({ message: 'Passwords do not match.' })
+      return res.status(400).json({ message: "Passwords do not match." });
     }
 
     // check if user exists
-    const existing = await User.findOne({ userName })
+    const existing = await User.findOne({ userName });
     if (existing) {
-      return res.status(409).json({ message: 'Username already taken.' })
+      return res.status(409).json({ message: "Username already taken." });
     }
 
     // hash password
@@ -43,7 +42,7 @@ export const signup = async (req, res, next) => {
       referId: referId,
     });
 
-    const savedUser = await newUser.save()
+    const savedUser = await newUser.save();
 
     res.status(201).json({
       message: "Signup Successfully",
@@ -58,36 +57,36 @@ export const signup = async (req, res, next) => {
     });
     next(error);
   }
-}
+};
 
 export const login = async (req, res, next) => {
   try {
-    const { userName, password } = req.body
+    const { userName, password } = req.body;
 
     if (!userName || !password) {
       return res
         .status(400)
-        .json({ message: 'Username and password are required.' })
+        .json({ message: "Username and password are required." });
     }
 
     // Find user with username and authType "username"
-    const user = await User.findOne({ userName, authType: 'App' })
+    const user = await User.findOne({ userName, authType: "App" });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid username or password.' })
+      return res.status(401).json({ message: "Invalid username or password." });
     }
 
     // Compare password
-    const isMatch = await bcrypt.compare(password, user.password)
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid username or password.' })
+      return res.status(401).json({ message: "Invalid username or password." });
     }
 
     // Generate token
     const token = createToken({
       id: user._id,
-      authType: user.authType
-    })
+      authType: user.authType,
+    });
 
     res.status(200).json({
       message: "Login successfully",
@@ -99,23 +98,23 @@ export const login = async (req, res, next) => {
     });
     next(error);
   }
-}
+};
 
 export const personalDetails = async (req, res, next) => {
   try {
-    const userId = req.user._id
-    const { dob, gender, yourName, yourInterests } = req.body
-    const profilePic = req.file
+    const userId = req.user._id;
+    const { dob, gender, yourName, yourInterests } = req.body;
+    const profilePic = req.file;
 
     // Validate required fields
     if (!dob || !gender || !yourName || !yourInterests || !profilePic) {
       return res.status(400).json({
-        message: 'Missing Fields'
-      })
+        message: "Missing Fields",
+      });
     }
 
     // Fetch user by ID
-    const user = await User.findById(userId)
+    const user = await User.findById(userId);
 
     // Check if any personal detail already exists
     const hasPersonalDetails =
@@ -123,19 +122,19 @@ export const personalDetails = async (req, res, next) => {
       user.gender ||
       user.yourName ||
       user.profilePic ||
-      user.yourInterests?.length > 0
+      user.yourInterests?.length > 0;
 
     if (hasPersonalDetails) {
       return res
         .status(400)
-        .json({ message: 'Your Personal Details Already Created' })
+        .json({ message: "Your Personal Details Already Created" });
     }
 
     // Convert "sports, food" => ['sports', 'food']
     const interestsArray = yourInterests
-      .split(',')
-      .map(item => item.trim())
-      .filter(Boolean) // remove empty strings
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean); // remove empty strings
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -144,19 +143,63 @@ export const personalDetails = async (req, res, next) => {
         gender,
         yourName,
         profilePic: profilePic.path,
-        yourInterests: interestsArray
+        yourInterests: interestsArray,
       },
       { new: true }
-    )
+    );
 
     res.status(200).json({
-      message: 'Personal Details updated successfully',
-      user: updatedUser
-    })
+      message: "Personal Details updated successfully",
+      user: updatedUser,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
     });
     next(error);
+  }
+};
+
+export const addReferral = async (req, res) => {
+  try {
+    const { refId } = req.body;
+
+    if (!refId) {
+      return res.status(400).json({ message: "Referral ID is required" });
+    }
+
+    const friendId = req.user._id;
+
+    const referrer = await User.findOne({ referId: refId });
+
+    if (!referrer) {
+      return res.status(404).json({ message: "Referrer not found" });
+    }
+
+    if (referrer._id.toString() === friendId.toString()) {
+      return res.status(400).json({ message: "You cannot refer yourself" });
+    }
+
+    const alreadyExist = await Referral.findOne({
+      referrer: referrer._id,
+      referred: friendId,
+    });
+
+    if (alreadyExist) {
+      return res.status(400).json({ message: "Referral already exists" });
+    }
+
+    await Referral.create({
+      referrer: referrer,
+      referred: friendId,
+    });
+
+    return res.status(200).json({
+      message: "Referral added successfully",
+      referrerId: referrer._id,
+    });
+  } catch (error) {
+    console.error("Error adding referral:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
