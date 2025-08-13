@@ -26,7 +26,7 @@ router.get(
         authType: req.user.authType,
       };
 
-      const token = await createToken(payload);
+      const token = createToken(payload);
 
       res.cookie("token", token, COOKIE_OPTIONS);
       res.redirect("https://www.wikipedia.org/");

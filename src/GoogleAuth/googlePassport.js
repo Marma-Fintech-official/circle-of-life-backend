@@ -20,7 +20,6 @@ passport.use(
           const userData = {
             authType: profile.provider,
             googleId: profile.id,
-            userName: profile.displayName,
             email: profile.emails?.[0]?.value || "",
             profilePic: profile.photos?.[0]?.value || "",
             referId: await getUniqueReferId(User),
