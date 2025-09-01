@@ -35,3 +35,14 @@ export const addUserEntry = async (req, res, next) => {
     next(error)
   }
 }
+
+export const  updateUserEntry = async(req,res,next) => {
+  try {
+    const { userEntry, userEntryId} = req.body
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong' })
+    next(error)
+  }
+}
+
+
