@@ -1,69 +1,69 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const userSchema = new mongoose.Schema(
   {
     authType: {
       type: String,
-      enum: ["google", "App", "web3"],
-      default: "App",
-    },
-    email: {
-      type: String,
-      default: "",
+      enum: ['google', 'App', 'web3', 'X'],
+      default: 'App'
     },
     userName: {
-      type: String,
-      unique: true,
-      sparse: true, // allows null, unique only for non-null
-      default: "",
+      type: String
+      // unique: true,
+      // sparse: true, // allows null, unique only for non-null
+      // default: "",
     },
     password: {
-      type: String,
-      default: "",
+      type: String
+      // default: "",
+    },
+    twitterId: {
+      type: String
+      // default: ""
     },
     googleId: {
-      type: String,
-      default: "",
+      type: String
+      // default: "",
     },
     walletAddress: {
-      type: String,
-      default: "",
+      type: String
+      // default: "",
     },
     walletProvider: {
-      type: String,
-      default: "",
+      type: String
+      // default: "",
     },
     dob: {
-      type: Date,
-      default: null,
+      type: Date
+      // default: null,
     },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Other", ""],
-      default: "",
+      enum: ['Male', 'Female', 'Other', '']
+      // default: "",
     },
     yourName: {
-      type: String,
-      default: "",
+      type: String
+      // default: "",
     },
     profilePic: {
-      type: String,
-      default: "",
+      type: String
+      // default: "",
     },
     yourInterests: {
-      type: [String],
-      default: [],
+      type: [String]
+      // default: [],
     },
     referId: {
-      type: String,
-      unique: true,
-      sparse: true,
-      default: "",
-    },
+      type: String
+      // unique: true,
+      // sparse: true,
+      // default: "",
+    }
   },
   { timestamps: true }
-);
+)
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema)
 
-export default User;
+export default User
