@@ -16,8 +16,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    session: false,
-    failureRedirect: "/login",
+    failureRedirect: "/failure", // If Twitter login fails
   }),
   async (req, res) => {
     try {
@@ -36,5 +35,9 @@ router.get(
     next(error);
   }
 );
+
+router.get("/failure", (req, res) => {
+  res.json({ message: "Fail to login" });
+});
 
 export default router;

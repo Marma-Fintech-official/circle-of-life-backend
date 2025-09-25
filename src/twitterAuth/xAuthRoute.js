@@ -16,7 +16,6 @@ router.get(
 router.get(
   "/twitter/callback",
   passport.authenticate("twitter", {
-    session: false,
     failureRedirect: "/failure", // If Twitter login fails
   }),
   async (req, res) => {
