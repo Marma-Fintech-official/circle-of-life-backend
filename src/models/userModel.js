@@ -4,61 +4,43 @@ const userSchema = new mongoose.Schema(
   {
     authType: {
       type: String,
-      enum: ['google', 'App', 'web3', 'X'],
-      default: 'App'
+      enum: ['google',  'web3', 'X'],
     },
     userName: {
-      type: String
-      // unique: true,
-      // sparse: true, // allows null, unique only for non-null
-      // default: "",
-    },
-    password: {
-      type: String
-      // default: "",
+      type: String,
+      unique: true,
+      default: "",
     },
     twitterId: {
       type: String
-      // default: ""
     },
     googleId: {
       type: String
-      // default: "",
     },
     walletAddress: {
-      type: String
-      // default: "",
+      type: String,
+      default: "",
     },
     walletProvider: {
-      type: String
-      // default: "",
+      type: String,
+      default: "",
     },
     dob: {
-      type: Date
-      // default: null,
+      type: Date,
+      default: null,
     },
     gender: {
       type: String,
-      enum: ['Male', 'Female', 'Other', '']
-      // default: "",
-    },
-    yourName: {
-      type: String
-      // default: "",
+      enum: ['Male', 'Female', 'Other', ''],
+      default: "",
     },
     profilePic: {
-      type: String
-      // default: "",
-    },
-    yourInterests: {
-      type: [String]
-      // default: [],
+      type: String,
+      default: "",
     },
     referId: {
-      type: String
-      // unique: true,
-      // sparse: true,
-      // default: "",
+      type: String,
+      unique: true,
     }
   },
   { timestamps: true }

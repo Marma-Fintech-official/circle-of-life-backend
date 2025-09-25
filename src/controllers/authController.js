@@ -160,7 +160,7 @@ export const personalDetails = async (req, res, next) => {
   }
 };
 
-export const addReferral = async (req, res) => {
+export const addReferral = async (req, res, next) => {
   try {
     const { refId } = req.body;
 

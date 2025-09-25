@@ -16,9 +16,10 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/failure", // If Twitter login fails
+    session: false,
+    failureRedirect: "/login",
   }),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const payload = {
         id: req.user._id,
@@ -30,9 +31,8 @@ router.get(
       res.cookie("token", token, COOKIE_OPTIONS);
       res.redirect("https://www.wikipedia.org/");
     } catch (error) {
-      res.status(500).json({ message: "Internal Server Error" });
+      return next(error);
     }
-    next(error);
   }
 );
 
