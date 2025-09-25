@@ -1,5 +1,5 @@
-const passport = require('passport');
-const TwitterStrategy = require('passport-twitter-oauth2').Strategy;
+import passport from "passport";
+import { Strategy as TwitterStrategy } from 'passport-twitter-oauth2';
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
 import { getUniqueReferId } from "../utils/generateReferrals.js";
