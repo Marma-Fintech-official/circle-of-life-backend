@@ -33,8 +33,10 @@ router.get(
       // Redirect after successful login
       res.redirect("https://www.wikipedia.org/");
     } catch (error) {
-      console.error("Twitter OAuth Error:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).json({
+        message: 'Something went wrong'
+      })
+      next(error)
     }
   }
 );

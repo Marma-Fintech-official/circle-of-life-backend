@@ -1,49 +1,74 @@
-import User from "../models/userModel.js";
+import User from '../models/userModel.js'
 // import { decryptedDatas } from "../helper/decrypt.js";
-import Referral from "../models/userReferralDetailsModel.js";
-
+import Referral from '../models/userReferralDetailsModel.js'
+import { isTokenBlacklisted, addToBlacklist } from '../helper/tokenHandler.js'
 export const addReferral = async (req, res, next) => {
   try {
-    const { refId } = req.body;
+    const { refId } = req.body
 
     if (!refId) {
-      return res.status(400).json({ message: "Referral ID is required" });
+      return res.status(400).json({ message: 'Referral ID is required' })
     }
 
-    const friendId = req.user._id;
+    const friendId = req.user._id
 
-    const referrer = await User.findOne({ referId: refId });
+    const referrer = await User.findOne({ referId: refId })
 
     if (!referrer) {
-      return res.status(404).json({ message: "Referrer not found" });
+      return res.status(404).json({ message: 'Referrer not found' })
     }
 
     if (referrer._id.toString() === friendId.toString()) {
-      return res.status(400).json({ message: "You cannot refer yourself" });
+      return res.status(400).json({ message: 'You cannot refer yourself' })
     }
 
     const alreadyExist = await Referral.findOne({
       referrer: referrer._id,
-      referred: friendId,
-    });
+      referred: friendId
+    })
 
     if (alreadyExist) {
-      return res.status(400).json({ message: "Referral already exists" });
+      return res.status(400).json({ message: 'Referral already exists' })
     }
 
     await Referral.create({
       referrer: referrer,
-      referred: friendId,
-    });
+      referred: friendId
+    })
 
     return res.status(200).json({
-      message: "Referral added successfully",
-      referrerId: referrer._id,
-    });
+      message: 'Referral added successfully',
+      referrerId: referrer._id
+    })
   } catch (error) {
     res.status(500).json({
-      message: "Something went wrong",
-    });
-    next(error);
+      message: 'Something went wrong'
+    })
+    next(error)
   }
-};
+}
+
+export const signOut = async (req, res, next) => {
+  try {
+    const token = req.cookies.token
+
+    // Check if the token is already blacklisted
+    if (await isTokenBlacklisted(token)) {
+      res.status(401).send({ message: 'Token is already blacklisted' })
+      return
+    }
+
+    // Add the token to the blacklist
+    await addToBlacklist(token)
+
+    // Clear the cookies in the response
+    res.clearCookie('token')
+
+    res.status(201).send({ message: 'User logged out successfully' })
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error)
+  }
+}

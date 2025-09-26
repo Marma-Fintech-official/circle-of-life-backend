@@ -36,7 +36,6 @@ passport.use(
   )
 );
 
-// These are optional if you're using sessions
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
