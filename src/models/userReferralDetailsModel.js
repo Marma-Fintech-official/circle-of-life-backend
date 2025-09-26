@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const referralSchema = new mongoose.Schema(
+const userReferralSchema = new mongoose.Schema(
   {
     referrer: {
       type: mongoose.Schema.Types.ObjectId,
@@ -16,4 +16,4 @@ const referralSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Referral", referralSchema);
+export default mongoose.model("userReferral", userReferralSchema);
