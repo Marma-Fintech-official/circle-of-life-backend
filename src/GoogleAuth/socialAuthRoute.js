@@ -24,6 +24,7 @@ router.get(
       const payload = {
         id: req.user._id,
         authType: req.user.authType,
+        userName: req.user.userName
       };
 
       const token = createToken(payload);

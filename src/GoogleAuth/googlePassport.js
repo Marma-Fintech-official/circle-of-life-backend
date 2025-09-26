@@ -19,6 +19,7 @@ passport.use(
         if (!user) {
           const userData = {
             authType: profile.provider,
+            userName: profile.displayName,
             googleId: profile.id,
             email: profile.emails?.[0]?.value || "",
             profilePic: profile.photos?.[0]?.value || "",
