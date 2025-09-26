@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema(
     },
     userName: {
       type: String,
-      unique: true,
       default: ''
     },
     email: {
@@ -22,8 +21,16 @@ const userSchema = new mongoose.Schema(
     googleId: {
       type: String
     },
+    telegramId: {
+      type: String
+    },
     walletAddress: {
       type: String,
+      default: ''
+    },
+    yourName: {
+      type: String,
+      unique: true,
       default: ''
     },
     profilePic: {
