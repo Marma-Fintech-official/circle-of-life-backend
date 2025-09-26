@@ -16,7 +16,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    session: false,
+    session: false, //Login sessions require session support
     failureRedirect: "/login",
   }),
   async (req, res, next) => {

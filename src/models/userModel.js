@@ -4,12 +4,17 @@ const userSchema = new mongoose.Schema(
   {
     authType: {
       type: String,
-      enum: ['google',  'web3', 'X'],
+      enum: ['google', 'web3', 'X', 'telegram']
     },
     userName: {
       type: String,
       unique: true,
-      default: "",
+      default: ''
+    },
+    email: {
+      type: String,
+      unique: true,
+      default: ''
     },
     twitterId: {
       type: String
@@ -19,28 +24,35 @@ const userSchema = new mongoose.Schema(
     },
     walletAddress: {
       type: String,
-      default: "",
-    },
-    walletProvider: {
-      type: String,
-      default: "",
-    },
-    dob: {
-      type: Date,
-      default: null,
-    },
-    gender: {
-      type: String,
-      enum: ['Male', 'Female', 'Other', ''],
-      default: "",
+      default: ''
     },
     profilePic: {
       type: String,
-      default: "",
+      default: ''
     },
     referId: {
       type: String,
-      unique: true,
+      unique: true
+    },
+    profileCompleted: {
+      type: Boolean,
+      default: false
+    },
+    profileCompletionPercent: {
+      type: Number,
+      default: 0
+    },
+    profileCompletedAt: {
+      type: Date,
+      default: 0
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false
+    },
+    deletedAt: {
+      type: Date,
+      default: 0
     }
   },
   { timestamps: true }
