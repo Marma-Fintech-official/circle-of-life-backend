@@ -8,6 +8,11 @@ export const updateUserProfile = async(req,res,next) => {
   try {
     const userId = req.user._id
 
+    // Safely handle missing/empty body
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: 'Fields required' })
+    }
+
     const {
       yourName,
       profileHandle,
@@ -15,7 +20,7 @@ export const updateUserProfile = async(req,res,next) => {
       tagline,
       inspireEnabled,
       publicSummary
-    } = req.body
+    } = req.body || {}
 
     const userUpdates = {}
     if (typeof yourName !== 'undefined') userUpdates.yourName = yourName
@@ -27,11 +32,8 @@ export const updateUserProfile = async(req,res,next) => {
     if (typeof inspireEnabled !== 'undefined') profileUpdates.inspireEnabled = inspireEnabled
     if (typeof publicSummary !== 'undefined') profileUpdates.publicSummary = publicSummary
 
-    if (
-      Object.keys(userUpdates).length === 0 &&
-      Object.keys(profileUpdates).length === 0
-    ) {
-      return res.status(400).json({ message: 'No updatable fields provided' })
+    if (Object.keys(userUpdates).length === 0 && Object.keys(profileUpdates).length === 0) {
+      return res.status(400).json({ message: 'Fields required' })
     }
 
     let updatedUser = null
@@ -49,7 +51,7 @@ export const updateUserProfile = async(req,res,next) => {
     if (Object.keys(profileUpdates).length > 0) {
       updatedProfile = await UserProfile.findOneAndUpdate(
         { userId },
-        { $set: { ...profileUpdates, userId }, $setOnInsert: { userId } },
+        { $set: { ...profileUpdates }, $setOnInsert: { userId } },
         { new: true, upsert: true }
       )
     } else {
