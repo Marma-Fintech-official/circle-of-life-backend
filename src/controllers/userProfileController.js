@@ -4,7 +4,7 @@ import Referral from '../models/userReferralDetailsModel.js'
 import { isTokenBlacklisted, addToBlacklist } from '../helper/tokenHandler.js'
 // import { decryptedDatas } from "../helper/decrypt.js";
 
-export const updateUserProfile = async(req,res,next) => {
+export const updateUserProfile = async (req, res, next) => {
   try {
     const userId = req.user._id
 
@@ -24,15 +24,22 @@ export const updateUserProfile = async(req,res,next) => {
 
     const userUpdates = {}
     if (typeof yourName !== 'undefined') userUpdates.yourName = yourName
-    if (typeof profileHandle !== 'undefined') userUpdates.profileHandle = profileHandle
-    if (typeof userNotification !== 'undefined') userUpdates.userNotification = userNotification
+    if (typeof profileHandle !== 'undefined')
+      userUpdates.profileHandle = profileHandle
+    if (typeof userNotification !== 'undefined')
+      userUpdates.userNotification = userNotification
 
     const profileUpdates = {}
     if (typeof tagline !== 'undefined') profileUpdates.tagline = tagline
-    if (typeof inspireEnabled !== 'undefined') profileUpdates.inspireEnabled = inspireEnabled
-    if (typeof publicSummary !== 'undefined') profileUpdates.publicSummary = publicSummary
+    if (typeof inspireEnabled !== 'undefined')
+      profileUpdates.inspireEnabled = inspireEnabled
+    if (typeof publicSummary !== 'undefined')
+      profileUpdates.publicSummary = publicSummary
 
-    if (Object.keys(userUpdates).length === 0 && Object.keys(profileUpdates).length === 0) {
+    if (
+      Object.keys(userUpdates).length === 0 &&
+      Object.keys(profileUpdates).length === 0
+    ) {
       return res.status(400).json({ message: 'Fields required' })
     }
 
@@ -83,69 +90,100 @@ export const updateUserProfile = async(req,res,next) => {
   }
 }
 
-export const getUserProfile = async(req,res,next) => {
-try {
-  const userId = req.user._id
-
-  // Fetch base user fields
-  const user = await User.findById(userId).select(
-    '_id userName email walletAddress yourName profilePic referId profileHandle userNotification'
-  )
-
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' })
-  }
-
-  // Fetch profile fields
-  const profileDoc = await UserProfile.findOne({ userId }).select(
-    'userId tagline inspireEnabled inspireSupply inspireBasePrice inspireExponent inspireFloor currentRank publicSummary consentVersion'
-  )
-
-  // Normalize Decimal128s to string numbers for safe JSON
-  const normalizeDecimal = (value) => {
-    if (value === null || value === undefined) return 0
-    try {
-      const str = value.toString()
-      const num = Number(str)
-      return Number.isNaN(num) ? str : num
-    } catch (_) {
-      return value
-    }
-  }
-
-  const response = {
-    userId: user._id,
-    userName: user.userName,
-    email: user.email,
-    walletAddress: user.walletAddress,
-    yourName: user.yourName,
-    profilePic: user.profilePic,
-    referId: user.referId,
-    profileHandle: user.profileHandle,
-    userNotification: user.userNotification,
-    tagline: profileDoc ? profileDoc.tagline : '',
-    inspireEnabled: profileDoc ? profileDoc.inspireEnabled : false,
-    inspireSupply: profileDoc ? profileDoc.inspireSupply : 0,
-    inspireBasePrice: normalizeDecimal(profileDoc ? profileDoc.inspireBasePrice : 0),
-    inspireExponent: normalizeDecimal(profileDoc ? profileDoc.inspireExponent : 0),
-    inspireFloor: normalizeDecimal(profileDoc ? profileDoc.inspireFloor : 0),
-    currentRank: profileDoc ? profileDoc.currentRank : 0,
-    publicSummary: profileDoc ? profileDoc.publicSummary : '',
-    consentVersion: profileDoc ? profileDoc.consentVersion : ''
-  }
-
-  return res.status(200).json(response)
-} catch (error) {
-  res.status(500).json({
-    message: 'Something went wrong'
-  })
-  next(error)
-}
-}
-
-export const editProfilePic = async(req,res,next) => {
+export const getUserProfile = async (req, res, next) => {
   try {
     const userId = req.user._id
+
+    // Fetch base user fields
+    const user = await User.findById(userId).select(
+      '_id userName email walletAddress yourName profilePic referId profileHandle userNotification'
+    )
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    // Fetch profile fields
+    const profileDoc = await UserProfile.findOne({ userId }).select(
+      'userId tagline inspireEnabled inspireSupply inspireBasePrice inspireExponent inspireFloor currentRank publicSummary consentVersion'
+    )
+
+    // Normalize Decimal128s to string numbers for safe JSON
+    const normalizeDecimal = value => {
+      if (value === null || value === undefined) return 0
+      try {
+        const str = value.toString()
+        const num = Number(str)
+        return Number.isNaN(num) ? str : num
+      } catch (_) {
+        return value
+      }
+    }
+
+    const response = {
+      userId: user._id,
+      userName: user.userName,
+      email: user.email,
+      walletAddress: user.walletAddress,
+      yourName: user.yourName,
+      profilePic: user.profilePic,
+      referId: user.referId,
+      profileHandle: user.profileHandle,
+      userNotification: user.userNotification,
+      tagline: profileDoc ? profileDoc.tagline : '',
+      inspireEnabled: profileDoc ? profileDoc.inspireEnabled : false,
+      inspireSupply: profileDoc ? profileDoc.inspireSupply : 0,
+      inspireBasePrice: normalizeDecimal(
+        profileDoc ? profileDoc.inspireBasePrice : 0
+      ),
+      inspireExponent: normalizeDecimal(
+        profileDoc ? profileDoc.inspireExponent : 0
+      ),
+      inspireFloor: normalizeDecimal(profileDoc ? profileDoc.inspireFloor : 0),
+      currentRank: profileDoc ? profileDoc.currentRank : 0,
+      publicSummary: profileDoc ? profileDoc.publicSummary : '',
+      consentVersion: profileDoc ? profileDoc.consentVersion : ''
+    }
+
+    return res.status(200).json(response)
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error)
+  }
+}
+
+export const updateProfilePic = async (req, res, next) => {
+  try {
+    const userId = req.user._id
+    const profilePic = req.file
+    if (!profilePic) {
+      return res
+        .status(400)
+        .json({ message: 'Profile picture file is required' })
+    }
+
+    // multer-storage-cloudinary provides the hosted URL on file.path (or secure_url)
+    const imageUrl = profilePic.path || profilePic.secure_url
+
+    if (!imageUrl) {
+      return res.status(500).json({ message: 'Failed to upload image' })
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { profilePic: imageUrl } },
+      { new: true }
+    )
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    return res.status(200).json({
+      message: 'Profile picture updated successfully'
+    })
   } catch (error) {
     res.status(500).json({
       message: 'Something went wrong'
