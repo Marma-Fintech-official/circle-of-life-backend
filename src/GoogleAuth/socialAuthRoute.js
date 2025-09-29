@@ -28,9 +28,11 @@ router.get(
       }
 
       const token = createToken(payload)
-
-      res.cookie('token', token, COOKIE_OPTIONS)
-      res.redirect('https://www.wikipedia.org/')
+        
+      res.cookie("id", req.user._id.toString(), COOKIE_OPTIONS);
+      res.cookie("token", token.toString(), COOKIE_OPTIONS);
+      // res.redirect('https://www.wikipedia.org/')
+      res.json({ message: 'login success' })
     } catch (error) {
       res.status(500).json({
         message: 'Something went wrong'

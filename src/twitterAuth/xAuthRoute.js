@@ -27,11 +27,10 @@ router.get(
 
       const token = createToken(payload);
 
-      // Save token in cookie
-      res.cookie("token", token, COOKIE_OPTIONS);
-
-      // Redirect after successful login
-      res.redirect("https://www.wikipedia.org/");
+          
+      res.cookie("id", req.user._id.toString(), COOKIE_OPTIONS);
+      res.cookie("token", token.toString(), COOKIE_OPTIONS);
+      res.json({ message: 'login success' })
     } catch (error) {
       res.status(500).json({
         message: 'Something went wrong'

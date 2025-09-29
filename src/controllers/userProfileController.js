@@ -1,7 +1,86 @@
 import User from '../models/userModel.js'
-// import { decryptedDatas } from "../helper/decrypt.js";
+import UserProfile from '../models/userProfileDetailsModel.js'
 import Referral from '../models/userReferralDetailsModel.js'
 import { isTokenBlacklisted, addToBlacklist } from '../helper/tokenHandler.js'
+// import { decryptedDatas } from "../helper/decrypt.js";
+
+export const updateUserProfile = async(req,res,next) => {
+  try {
+    const userId = req.user._id
+
+    const {
+      yourName,
+      profileHandle,
+      userNotification,
+      tagline,
+      inspireEnabled,
+      publicSummary
+    } = req.body
+
+    const userUpdates = {}
+    if (typeof yourName !== 'undefined') userUpdates.yourName = yourName
+    if (typeof profileHandle !== 'undefined') userUpdates.profileHandle = profileHandle
+    if (typeof userNotification !== 'undefined') userUpdates.userNotification = userNotification
+
+    const profileUpdates = {}
+    if (typeof tagline !== 'undefined') profileUpdates.tagline = tagline
+    if (typeof inspireEnabled !== 'undefined') profileUpdates.inspireEnabled = inspireEnabled
+    if (typeof publicSummary !== 'undefined') profileUpdates.publicSummary = publicSummary
+
+    if (
+      Object.keys(userUpdates).length === 0 &&
+      Object.keys(profileUpdates).length === 0
+    ) {
+      return res.status(400).json({ message: 'No updatable fields provided' })
+    }
+
+    let updatedUser = null
+    if (Object.keys(userUpdates).length > 0) {
+      updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: userUpdates },
+        { new: true }
+      )
+    } else {
+      updatedUser = await User.findById(userId)
+    }
+
+    let updatedProfile = null
+    if (Object.keys(profileUpdates).length > 0) {
+      updatedProfile = await UserProfile.findOneAndUpdate(
+        { userId },
+        { $set: { ...profileUpdates, userId }, $setOnInsert: { userId } },
+        { new: true, upsert: true }
+      )
+    } else {
+      updatedProfile = await UserProfile.findOne({ userId })
+    }
+
+    return res.status(200).json({
+      message: 'Profile updated successfully',
+      user: {
+        _id: updatedUser?._id,
+        yourName: updatedUser?.yourName,
+        profileHandle: updatedUser?.profileHandle,
+        userNotification: updatedUser?.userNotification
+      },
+      profile: updatedProfile
+        ? {
+            userId: updatedProfile.userId,
+            tagline: updatedProfile.tagline,
+            inspireEnabled: updatedProfile.inspireEnabled,
+            publicSummary: updatedProfile.publicSummary
+          }
+        : null
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error)
+  }
+}
+
 export const addReferral = async (req, res, next) => {
   try {
     const { refId } = req.body

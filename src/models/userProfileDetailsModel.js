@@ -8,10 +8,6 @@ const userProfileSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
-    handle: {
-      type: String,
-      unique: true
-    },
     tagline: {
       type: String,
       default: ''
@@ -48,14 +44,6 @@ const userProfileSchema = new Schema(
       type: String,
       default: ''
     },
-    isDeleted: {
-      type: Boolean,
-      default: false
-    },
-    deletedAt: {
-      type: Date,
-      default: 0
-    }
   },
   {
     timestamps: true

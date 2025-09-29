@@ -28,6 +28,12 @@ export const protect = async (req, res, next) => {
           .status(401)
           .send({ message: "Unauthorized - User not found" });
       }
+      
+      if (req.user.isDeleted === true) {
+        return res
+          .status(401)
+          .send({ message: "Unauthorized - User not found" });
+      }
       return next();
     } else {
       return res

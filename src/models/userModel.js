@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       unique: true,
-      default: ''
+      sparse: true 
     },
     twitterId: {
       type: String
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
     yourName: {
       type: String,
       unique: true,
-      default: ''
+      sparse: true 
     },
     profilePic: {
       type: String,
@@ -39,7 +39,8 @@ const userSchema = new mongoose.Schema(
     },
     referId: {
       type: String,
-      unique: true
+      unique: true,
+      sparse: true 
     },
     profileCompleted: {
       type: Boolean,
@@ -52,6 +53,15 @@ const userSchema = new mongoose.Schema(
     profileCompletedAt: {
       type: Date,
       default: 0
+    },
+    profileHandle: {
+      type: String,
+      enum: ["public", "private", "friends"], 
+      default: "public",
+    },
+    userNotification: {
+      type: Boolean,
+      default: true
     },
     isDeleted: {
       type: Boolean,
