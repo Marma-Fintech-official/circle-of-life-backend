@@ -143,6 +143,17 @@ try {
 }
 }
 
+export const editProfilePic = async(req,res,next) => {
+  try {
+    const userId = req.user._id
+  } catch (error) {
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+    next(error)
+  }
+}
+
 export const addReferral = async (req, res, next) => {
   try {
     const { refId } = req.body
