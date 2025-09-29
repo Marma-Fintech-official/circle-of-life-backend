@@ -7,7 +7,7 @@ router.post("/telegramLogin", async (req, res) => {
   try {
     const { user, token } = await handleTelegramAuth(req.body);
 
-    res.cookie('token', token, COOKIE_OPTIONS)
+    res.cookie("token", token.toString(), COOKIE_OPTIONS);
     res.json({
       user,
       jwtToken: token,
