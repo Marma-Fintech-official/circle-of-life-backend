@@ -1,8 +1,8 @@
-import UserJournel from '../models/userJournelModel.js';
+import UserJournal from '../models/userJournalModel.js';
 // import { decryptedDatas } from "../helper/decrypt.js";
 
 
-export const createUserJournel = async (req, res, next) => {
+export const createUserJournal = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
@@ -23,7 +23,7 @@ export const createUserJournel = async (req, res, next) => {
       // OR file.filename if you're storing only the name
     }
 
-      await UserJournel.create({
+      await UserJournal.create({
       user: userId,
       contentSummary,
       contentHandle,
@@ -67,7 +67,7 @@ export const updateUserProfile = async (req, res, next) => {
     }
 
     // Find existing journal
-    const journal = await UserJournel.findOne({ _id: journalId, user: userId });
+    const journal = await UserJournal.findOne({ _id: journalId, user: userId });
     if (!journal) {
       return res.status(404).json({ message: 'Journal not found' });
     }
@@ -86,10 +86,54 @@ export const updateUserProfile = async (req, res, next) => {
     }
 
     // Save updated journal
-    const updatedJournal = await journal.save();
+    await journal.save();
 
     res.status(200).json({
       message: 'Journal updated successfully',
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong' });
+    next(error);
+  }
+};
+
+export const getUserJournals = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const journalId = req.query.id; // if provided, fetch single journal
+
+    //1. Fetch single journal by ID
+    if (journalId) {
+      const journal = await UserJournal.findOne({ _id: journalId, user: userId });
+      if (!journal) {
+        return res.status(404).json({ message: 'Journal not found' });
+      }
+      return res.status(200).json({
+        success: true,
+        data: journal
+      });
+    }
+
+    //2. Fetch all journals with pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalCount = await UserJournal.countDocuments({ user: userId });
+
+    const journals = await UserJournal.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      success: true,
+      page,
+      limit,
+      totalPages: Math.ceil(totalCount / limit),
+      totalCount,
+      data: journals
     });
 
   } catch (error) {

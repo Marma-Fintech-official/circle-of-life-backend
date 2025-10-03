@@ -1,8 +1,9 @@
 import express from 'express'
 import {
-    createUserJournel,
-    updateUserProfile
-} from '../controllers/userJournelController.js'
+    createUserJournal,
+    updateUserProfile,
+    getUserJournals
+} from '../controllers/userJournalController.js'
 import { payloadValidation } from '../helper/playloadValidation.js'
 import { protect } from '../helper/protect.js'
 import { celebrate, errors } from 'celebrate'
@@ -14,7 +15,7 @@ router.post(
     '/createUserInput',
     protect,
     upload.array("contentAttachments", 10), // 10 = max file count (change as needed)
-    createUserJournel
+    createUserJournal
   )
 
   router.put(
@@ -22,6 +23,12 @@ router.post(
     protect, 
     upload.array("contentAttachments", 10), 
     updateUserProfile
+  );
+
+  router.get(
+    '/getUserInputs',
+    protect,
+    getUserJournals
   );
 
 router.use(errors())

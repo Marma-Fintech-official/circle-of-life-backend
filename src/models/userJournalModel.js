@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const userJournelSchema = new Schema({
+const userJournalSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -34,6 +34,6 @@ const userJournelSchema = new Schema({
 { timestamps: true }
 )
 
-const userJournel = mongoose.model('UserJournel', userJournelSchema)
+const userJournal = mongoose.model('UserJournal', userJournalSchema)
 
-export default userJournel
+export default userJournal
