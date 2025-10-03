@@ -1,4 +1,5 @@
 import UserJournal from '../models/userJournalModel.js';
+import axios from "axios";
 // import { decryptedDatas } from "../helper/decrypt.js";
 
 
