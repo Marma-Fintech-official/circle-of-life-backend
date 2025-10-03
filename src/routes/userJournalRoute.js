@@ -2,7 +2,8 @@ import express from 'express'
 import {
     createUserJournal,
     updateUserProfile,
-    getUserJournals
+    getUserJournals,
+    discardUserInput
 } from '../controllers/userJournalController.js'
 import { payloadValidation } from '../helper/playloadValidation.js'
 import { protect } from '../helper/protect.js'
@@ -30,6 +31,8 @@ router.post(
     protect,
     getUserJournals
   );
+
+  router.delete('/deleteUserInput', protect, discardUserInput)
 
 router.use(errors())
 

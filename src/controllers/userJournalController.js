@@ -141,4 +141,35 @@ export const getUserJournals = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const discardUserInput = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const journalId = req.query.id; 
+
+    if (!journalId) {
+      return res.status(400).json({ message: "Journal ID is required" });
+    }
+
+    // find and update journal entry
+    const journal = await UserJournal.findOneAndUpdate(
+      { _id: journalId, userId, isDeleted: false }, // ensure user owns it & not already deleted
+      { $set: { isDeleted: true, deletedAt: new Date() } },
+      { new: true }
+    );
+
+    if (!journal) {
+      return res.status(404).json({ message: "Journal not found or already deleted" });
+    }
+
+    res.status(200).json({
+      message: "Journal discarded successfully",
+      data: journal
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
   
