@@ -20,17 +20,29 @@ export const createUserJournal = async (req, res, next) => {
     // Handle uploaded files (if any)
     let contentAttachments = [];
     if (req.files && req.files.length > 0) {
-      contentAttachments = req.files.map(file => file.path); 
-      // OR file.filename if you're storing only the name
+      contentAttachments = req.files.map(file => file.path);
     }
 
-      await UserJournal.create({
+    // Save in local DB
+    await UserJournal.create({
       user: userId,
       contentSummary,
       contentHandle,
       contentType,
       contentAttachments,
     });
+
+    // Build the payload to send to the external service
+    const payload = {
+      user: userId,
+      contentSummary,
+      contentHandle,
+      contentType,
+      contentAttachments,
+    };
+
+    // Send the data to external API
+    await axios.post("http://localhost:8000/api/receive-entry", payload);
 
     res.status(201).json({
       message: 'User journal created successfully',
@@ -43,7 +55,6 @@ export const createUserJournal = async (req, res, next) => {
     next(error);
   }
 };
-
 
 export const updateUserProfile = async (req, res, next) => {
   try {
@@ -63,8 +74,7 @@ export const updateUserProfile = async (req, res, next) => {
     // Collect new files if uploaded
     let newAttachments = [];
     if (req.files && req.files.length > 0) {
-      newAttachments = req.files.map(file => file.path); 
-      // OR file.filename depending on how you store it
+      newAttachments = req.files.map(file => file.path);
     }
 
     // Find existing journal
@@ -78,7 +88,7 @@ export const updateUserProfile = async (req, res, next) => {
     if (contentHandle) journal.contentHandle = contentHandle;
     if (contentType) journal.contentType = contentType;
 
-    // Append new attachments (instead of overwriting)
+    // Append new attachments
     if (newAttachments.length > 0) {
       journal.contentAttachments = [
         ...journal.contentAttachments,
@@ -88,6 +98,19 @@ export const updateUserProfile = async (req, res, next) => {
 
     // Save updated journal
     await journal.save();
+
+    // Send updated data to external service
+    const payload = {
+      user: userId,
+      journalId,
+      contentSummary: journal.contentSummary,
+      contentHandle: journal.contentHandle,
+      contentType: journal.contentType,
+      contentAttachments: journal.contentAttachments,
+    };
+
+    // POST or PUT depending on your design
+    await axios.post("http://localhost:8000/api/receive-entry-update", payload);
 
     res.status(200).json({
       message: 'Journal updated successfully',
