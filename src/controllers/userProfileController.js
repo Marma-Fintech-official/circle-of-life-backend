@@ -24,10 +24,8 @@ export const updateUserProfile = async (req, res, next) => {
 
     const userUpdates = {}
     if (typeof yourName !== 'undefined') userUpdates.yourName = yourName
-    if (typeof profileHandle !== 'undefined')
-      userUpdates.profileHandle = profileHandle
-    if (typeof userNotification !== 'undefined')
-      userUpdates.userNotification = userNotification
+    if (typeof profileHandle !== 'undefined') userUpdates.profileHandle = profileHandle
+    if (typeof userNotification !== 'undefined') userUpdates.userNotification = userNotification
 
     // Optional profile picture upload in the same request (multipart/form-data)
     if (req.file) {
@@ -41,10 +39,8 @@ export const updateUserProfile = async (req, res, next) => {
 
     const profileUpdates = {}
     if (typeof tagline !== 'undefined') profileUpdates.tagline = tagline
-    if (typeof inspireEnabled !== 'undefined')
-      profileUpdates.inspireEnabled = inspireEnabled
-    if (typeof publicSummary !== 'undefined')
-      profileUpdates.publicSummary = publicSummary
+    if (typeof inspireEnabled !== 'undefined') profileUpdates.inspireEnabled = inspireEnabled
+    if (typeof publicSummary !== 'undefined') profileUpdates.publicSummary = publicSummary
 
     if (
       Object.keys(userUpdates).length === 0 &&
@@ -53,13 +49,10 @@ export const updateUserProfile = async (req, res, next) => {
       return res.status(400).json({ message: 'Fields required' })
     }
 
+    // --- Step 1: Update User and Profile documents ---
     let updatedUser = null
     if (Object.keys(userUpdates).length > 0) {
-      updatedUser = await User.findByIdAndUpdate(
-        userId,
-        { $set: userUpdates },
-        { new: true }
-      )
+      updatedUser = await User.findByIdAndUpdate(userId, { $set: userUpdates }, { new: true })
     } else {
       updatedUser = await User.findById(userId)
     }
@@ -75,6 +68,44 @@ export const updateUserProfile = async (req, res, next) => {
       updatedProfile = await UserProfile.findOne({ userId })
     }
 
+    // --- Step 2: Calculate Profile Completion (dynamic totalFields) ---
+    const allFields = {
+      yourName: updatedUser?.yourName,
+      profileHandle: updatedUser?.profileHandle,
+      userNotification: updatedUser?.userNotification,
+      tagline: updatedProfile?.tagline,
+      inspireEnabled: updatedProfile?.inspireEnabled,
+      publicSummary: updatedProfile?.publicSummary,
+      profilePic: updatedUser?.profilePic
+    }
+
+    const isFilled = (v) => {
+      if (v === null || v === undefined) return false
+      if (typeof v === 'boolean') return true // presence of boolean counts as filled
+      if (typeof v === 'string') return v.trim() !== ''
+      if (Array.isArray(v)) return v.length > 0
+      if (typeof v === 'object') return Object.keys(v).length > 0
+      return true
+    }
+
+    const filledCount = Object.values(allFields).filter(isFilled).length
+    const totalFields = Object.keys(allFields).length // dynamic: grows when you add fields
+    const completionPercent = Math.round((filledCount / totalFields) * 100)
+
+    // --- Step 3: Update completion fields in User (only set completedAt once) ---
+    const completionUpdate = { profileCompletionPercent: completionPercent }
+
+    // If it reaches 100% and there is no existing completedAt, set it now (do not overwrite)
+    const hasCompletedAt =
+      !!updatedUser?.profileCompletedAt && updatedUser.profileCompletedAt !== 0
+
+    if (completionPercent === 100 && !hasCompletedAt) {
+      completionUpdate.profileCompletedAt = new Date()
+    }
+
+    // Save and fetch updated user
+    updatedUser = await User.findByIdAndUpdate(userId, { $set: completionUpdate }, { new: true })
+
     return res.status(200).json({
       message: 'Profile updated successfully',
       user: {
@@ -82,7 +113,9 @@ export const updateUserProfile = async (req, res, next) => {
         yourName: updatedUser?.yourName,
         profilePic: updatedUser?.profilePic,
         profileHandle: updatedUser?.profileHandle,
-        userNotification: updatedUser?.userNotification
+        userNotification: updatedUser?.userNotification,
+        profileCompletionPercent: updatedUser?.profileCompletionPercent,
+        profileCompletedAt: updatedUser?.profileCompletedAt || null
       },
       profile: updatedProfile
         ? {
@@ -94,12 +127,11 @@ export const updateUserProfile = async (req, res, next) => {
         : null
     })
   } catch (error) {
-    res.status(500).json({
-      message: 'Something went wrong'
-    })
+    res.status(500).json({ message: 'Something went wrong' })
     next(error)
   }
 }
+
 
 export const getUserProfile = async (req, res, next) => {
   try {

@@ -42,10 +42,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true 
     },
-    profileCompleted: {
-      type: Boolean,
-      default: false
-    },
     profileCompletionPercent: {
       type: Number,
       default: 0
