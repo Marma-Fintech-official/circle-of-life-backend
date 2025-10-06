@@ -8,8 +8,8 @@ export const updateUserProfile = async (req, res, next) => {
   try {
     const userId = req.user._id
 
-    // Safely handle missing/empty body
-    if (!req.body || Object.keys(req.body).length === 0) {
+    // Safely handle missing/empty body when no file provided
+    if ((!req.body || Object.keys(req.body).length === 0) && !req.file) {
       return res.status(400).json({ message: 'Fields required' })
     }
 
@@ -28,6 +28,16 @@ export const updateUserProfile = async (req, res, next) => {
       userUpdates.profileHandle = profileHandle
     if (typeof userNotification !== 'undefined')
       userUpdates.userNotification = userNotification
+
+    // Optional profile picture upload in the same request (multipart/form-data)
+    if (req.file) {
+      const uploadedFile = req.file
+      const imageUrl = uploadedFile.path || uploadedFile.secure_url
+      if (!imageUrl) {
+        return res.status(500).json({ message: 'Failed to upload image' })
+      }
+      userUpdates.profilePic = imageUrl
+    }
 
     const profileUpdates = {}
     if (typeof tagline !== 'undefined') profileUpdates.tagline = tagline
@@ -70,6 +80,7 @@ export const updateUserProfile = async (req, res, next) => {
       user: {
         _id: updatedUser?._id,
         yourName: updatedUser?.yourName,
+        profilePic: updatedUser?.profilePic,
         profileHandle: updatedUser?.profileHandle,
         userNotification: updatedUser?.userNotification
       },
@@ -154,43 +165,6 @@ export const getUserProfile = async (req, res, next) => {
   }
 }
 
-export const updateProfilePic = async (req, res, next) => {
-  try {
-    const userId = req.user._id
-    const profilePic = req.file
-    if (!profilePic) {
-      return res
-        .status(400)
-        .json({ message: 'Profile picture file is required' })
-    }
-
-    // multer-storage-cloudinary provides the hosted URL on file.path (or secure_url)
-    const imageUrl = profilePic.path || profilePic.secure_url
-
-    if (!imageUrl) {
-      return res.status(500).json({ message: 'Failed to upload image' })
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $set: { profilePic: imageUrl } },
-      { new: true }
-    )
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' })
-    }
-
-    return res.status(200).json({
-      message: 'Profile picture updated successfully'
-    })
-  } catch (error) {
-    res.status(500).json({
-      message: 'Something went wrong'
-    })
-    next(error)
-  }
-}
 
 export const addReferral = async (req, res, next) => {
   try {
