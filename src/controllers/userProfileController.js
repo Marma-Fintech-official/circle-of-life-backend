@@ -24,8 +24,10 @@ export const updateUserProfile = async (req, res, next) => {
 
     const userUpdates = {}
     if (typeof yourName !== 'undefined') userUpdates.yourName = yourName
-    if (typeof profileHandle !== 'undefined') userUpdates.profileHandle = profileHandle
-    if (typeof userNotification !== 'undefined') userUpdates.userNotification = userNotification
+    if (typeof profileHandle !== 'undefined')
+      userUpdates.profileHandle = profileHandle
+    if (typeof userNotification !== 'undefined')
+      userUpdates.userNotification = userNotification
 
     // Optional profile picture upload in the same request (multipart/form-data)
     if (req.file) {
@@ -39,8 +41,10 @@ export const updateUserProfile = async (req, res, next) => {
 
     const profileUpdates = {}
     if (typeof tagline !== 'undefined') profileUpdates.tagline = tagline
-    if (typeof inspireEnabled !== 'undefined') profileUpdates.inspireEnabled = inspireEnabled
-    if (typeof publicSummary !== 'undefined') profileUpdates.publicSummary = publicSummary
+    if (typeof inspireEnabled !== 'undefined')
+      profileUpdates.inspireEnabled = inspireEnabled
+    if (typeof publicSummary !== 'undefined')
+      profileUpdates.publicSummary = publicSummary
 
     if (
       Object.keys(userUpdates).length === 0 &&
@@ -52,7 +56,11 @@ export const updateUserProfile = async (req, res, next) => {
     // --- Step 1: Update User and Profile documents ---
     let updatedUser = null
     if (Object.keys(userUpdates).length > 0) {
-      updatedUser = await User.findByIdAndUpdate(userId, { $set: userUpdates }, { new: true })
+      updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: userUpdates },
+        { new: true }
+      )
     } else {
       updatedUser = await User.findById(userId)
     }
@@ -79,7 +87,7 @@ export const updateUserProfile = async (req, res, next) => {
       profilePic: updatedUser?.profilePic
     }
 
-    const isFilled = (v) => {
+    const isFilled = v => {
       if (v === null || v === undefined) return false
       if (typeof v === 'boolean') return true // presence of boolean counts as filled
       if (typeof v === 'string') return v.trim() !== ''
@@ -104,7 +112,11 @@ export const updateUserProfile = async (req, res, next) => {
     }
 
     // Save and fetch updated user
-    updatedUser = await User.findByIdAndUpdate(userId, { $set: completionUpdate }, { new: true })
+    updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: completionUpdate },
+      { new: true }
+    )
 
     return res.status(200).json({
       message: 'Profile updated successfully',
@@ -131,7 +143,6 @@ export const updateUserProfile = async (req, res, next) => {
     next(error)
   }
 }
-
 
 export const getUserProfile = async (req, res, next) => {
   try {
@@ -196,7 +207,6 @@ export const getUserProfile = async (req, res, next) => {
     next(error)
   }
 }
-
 
 export const addReferral = async (req, res, next) => {
   try {
@@ -265,6 +275,26 @@ export const signOut = async (req, res, next) => {
     res.status(500).json({
       message: 'Something went wrong'
     })
+    next(error)
+  }
+}
+
+export const saveFcmToken = async (req, res, next) => {
+  try {
+    const userId = req.user._id
+    const { fcmToken } = req.body
+
+    if (!fcmToken)
+      return res.status(400).json({ message: 'FCM token is required' })
+
+    // Add token if it doesn't already exist
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { fcmTokens: fcmToken }
+    })
+
+    res.status(200).json({ message: 'FCM token saved successfully' })
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong' })
     next(error)
   }
 }

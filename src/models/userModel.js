@@ -59,6 +59,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
+    fcmTokens: {
+      type: [String], // Array to support multiple devices
+      default: [],
+    },
     isDeleted: {
       type: Boolean,
       default: false
