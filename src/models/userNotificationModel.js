@@ -18,6 +18,10 @@ const userNotificationSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  readByDate: {
+    type: Date, // Stores when the notification was read
+    default: null,
+  },
 }, {
   timestamps: true, // Automatically adds createdAt and updatedAt
 });
