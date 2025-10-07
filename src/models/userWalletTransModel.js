@@ -16,9 +16,9 @@ const userTranscationSchema = new Schema(
       ref: 'User',
       default: null // null for burn
     },
-    profileId: {
+    userJournalId: {
       type: Schema.Types.ObjectId,
-      ref: 'Profile',
+      ref: 'UserJournal',
       default: null
     },
     amount: {
