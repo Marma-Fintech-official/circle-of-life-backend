@@ -5,20 +5,17 @@ export const sendPushNotification = async (userId, title, message) => {
   try {
     const user = await User.findById(userId);
 
-    if (!user || !user.fcmTokens.length) {
-      console.log('No FCM tokens found for user', userId);
-      return;
-    }
+    if (!user) return;
+    if (!user.userNotification) return;
+    if (!user.fcmTokens || !user.fcmTokens.length) return;
 
     const messages = user.fcmTokens.map(token => ({
       notification: { title, body: message },
       token,
     }));
 
-    // Send notifications in batch
-    const response = await admin.messaging().sendAll(messages);
-    console.log('Push notifications sent:', response.successCount);
+    await admin.messaging().sendAll(messages);
   } catch (error) {
-    throw new Error("Error sending push notification", error);
+    throw new Error('Error sending push notification');
   }
 };
