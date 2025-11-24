@@ -106,13 +106,13 @@ export const transferCoins = async (req, res, next) => {
         type: 'transfer',
         amount,
         currency: 'COL',
-        metadata: { note: `Received ${amount} COL from ${sender.username || sender._id}` }
+        metadata: { note: `Received ${amount} COL from ${sender.yourName || sender._id}` }
       }
     ])
     
 
     res.status(200).json({
-      message: `Successfully transferred ${amount} COL to ${receiver.userName || receiver._id}`,
+      message: `Successfully transferred ${amount} COL to ${receiver.yourName || receiver._id}`,
       senderBalance: sender.walletBalance,
     })
   } catch (error) {

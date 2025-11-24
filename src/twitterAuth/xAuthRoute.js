@@ -8,10 +8,13 @@ const router = express.Router();
 
 // Step 1: Initiates Twitter OAuth flow
 router.get(
-  "/twitter",
-  passport.authenticate("twitter")
+  "/webapp/auth/twitter",
+  passport.authenticate("twitter", {
+    clientType: "oauth2", // ensures OAuth2
+    scope: ['tweet.read','users.read','offline.access'],
+    state: true // required for CSRF protection in OAuth2
+  })
 );
-
 // Step 2: Handles Twitter OAuth callback
 router.get(
   "/twitter/callback",

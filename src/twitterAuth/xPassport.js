@@ -12,6 +12,7 @@ passport.use(new TwitterStrategy({
     scope: ['tweet.read', 'users.read', 'offline.access']
   },
   async (accessToken, refreshToken, profile, done) => {
+    
     try {
       let user = await User.findOne({ twitterId: profile.id });
       if (!user) {
